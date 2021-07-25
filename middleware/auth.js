@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import users from '../models/users'
+import users from '../models/users.js'
 
 // 用在驗證 jwt Token 及 jwt 解譯出的使用者帳號 這2者是否有在資料庫裡
 export default async (req, res, next) => {

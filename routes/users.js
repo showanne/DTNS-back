@@ -1,9 +1,9 @@
 import express from 'express'
-import auth from '../middleware/auth'
+// import auth from '../middleware/auth.js'
 import {
   signUp,
   signIn
-} from '../controllers/users'
+} from '../controllers/users.js'
 
 const router = express.Router()
 
@@ -13,6 +13,6 @@ const router = express.Router()
 // signUp 註冊
 router.post('/', signUp)
 // signIn 登入
-router.post('/signIn', auth, signIn)
+router.post('/signIn', signIn)
 
 export default router

@@ -1,6 +1,6 @@
 import md5 from 'md5' // 加密套件
 import jwt from 'jsonwebtoken' // 驗證套件
-import users from '../models/users'
+import users from '../models/users.js'
 
 // signUp 註冊  / POST http://localhost:xx/users
 export const signUp = async (req, res) => {
@@ -23,7 +23,8 @@ export const signUp = async (req, res) => {
   } catch (error) {
     if (error.name === 'validationError') {
       // 如果錯誤訊息是驗證錯誤
-      // 因為驗證錯誤是拿資料欄位當 key 值，所以用 Object.keys()[0] 取第一個
+      // 錯誤的訊息的 key 值為欄位名稱，不固定
+      // 用 Object.keys 取第一個驗證錯誤
       const key = Object.keys(error.errors)[0]
       // 取得第一筆 驗證錯誤訊息
       const message = error.errors[key].message
@@ -32,8 +33,8 @@ export const signUp = async (req, res) => {
         message: message
       })
     } else if (error.name === 'MongoError' &&
-               error.code === 'E11000') {
-      // 如果錯誤訊息是Mongo錯誤 且 錯誤編號是 'E11000'
+               error.code === 11000) {
+      // 如果錯誤訊息是Mongo錯誤 且 錯誤編號是 11000 (數字格式)
       res.status(400).send({
         success: true,
         message: '帳號已存在'
@@ -62,7 +63,7 @@ export const signIn = async (req, res) => {
   }
   try {
     // 從資料庫裡撈出，符合使用者登入時輸入的帳號
-    const user = await users.findOne({ account: req.body.account })
+    const user = await users.findOne({ account: req.body.account }, '')
     // 如果有這個使用者
     if (user) {
       // 使用者輸入的密碼加密後是否是資料庫裡有存的加密後的密碼一樣
@@ -77,12 +78,16 @@ export const signIn = async (req, res) => {
           { expiresIn: '7 days' }
         )
         // 把序號存入使用者資料
-        user.token.push(token)
-        user.save()
+        user.tokens.push(token)
+        // 儲存之前不驗證就存入
+        user.save({ validateBeforeSave: false })
         res.status(200).send({
           success: true,
           message: '登入成功',
-          token
+          token,
+          email: user.email,
+          account: user.account,
+          role: user.role
         })
       } else {
         // 登入失敗
@@ -95,7 +100,7 @@ export const signIn = async (req, res) => {
       // 帳號打錯或沒註冊
       res.status(400).send({
         success: false,
-        message: '帳號不存在'
+        message: '帳號錯誤'
       })
     }
   } catch (error) {

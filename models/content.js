@@ -15,13 +15,14 @@ const ContentSchema = new Schema({
     type: Number,
     // 預設編輯為便利貼
     default: 0
-    // required: [true, '沒有文章類型']
+    // required: [true, '請選擇模板'] // 會有預設值，不可能空白
   },
   title: {
     type: String
   },
   public: {
-    type: String
+    type: Boolean
+    // required: [true, '是否要分享'] // 預設為 true 要分享
   },
   image: {
     type: String
@@ -33,7 +34,8 @@ const ContentSchema = new Schema({
     type: String
   },
   datepicker: {
-    type: String
+    type: Date
+    // type: String
   },
   select: {
     type: String

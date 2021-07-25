@@ -1,15 +1,22 @@
 import express from 'express' // 網頁伺服器
 import mongoose from 'mongoose' // MongoDB 操作套件
-import dotenv from 'dotenv'
-import bodyParser from 'body-parsre' // 讀取傳入網頁伺服器的資料
+import dotenv from 'dotenv' // 讀取環境設定檔
+import bodyParser from 'body-parser' // 讀取傳入網頁伺服器的資料
 import cors from 'cors' // 跨域套件
 
-import userRouter from './routes/users'
+// 資料的路由
+import userRouter from './routes/users.js'
 
 dotenv.config()
 
-// 資料庫連線
-mongoose.connect(process.env.MONGODB)
+// 連接資料庫  /  解決 mongoose 警示訊息
+mongoose.connect(process.env.MONGODB,
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
+mongoose.set('useFindAndModify', false)
+mongoose.set('useCreateIndex', true)
 
 const app = express()
 

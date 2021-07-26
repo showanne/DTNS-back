@@ -111,3 +111,25 @@ export const signIn = async (req, res) => {
   }
   console.log('signIn 登入')
 }
+
+// SignOut 登出  /  DELETE http://localhost:xx/users/signOut
+export const signOut = async (req, res) => {
+  try {
+    // req.user.tokens (登出時回傳的 tokens) 是不是不等於傳進來的
+    // 如果不等於會被留下；等於的會被踢掉(登出後刪除 tokens)
+    req.user.tokens = req.user.tokens.filter(token => token !== req.token)
+    // 儲存之前不驗證就存入
+    req.user.save({ validateBeforeSave: false })
+    res.status(200).send({
+      success: true,
+      message: ''
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({
+      success: false,
+      message: '伺服器錯誤'
+    })
+  }
+  console.log('SignOut 登出')
+}

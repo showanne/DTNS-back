@@ -1,8 +1,9 @@
 import express from 'express'
-// import auth from '../middleware/auth.js'
+import auth from '../middleware/auth.js'
 import {
   signUp,
-  signIn
+  signIn,
+  signOut
 } from '../controllers/users.js'
 
 const router = express.Router()
@@ -14,5 +15,7 @@ const router = express.Router()
 router.post('/', signUp)
 // signIn 登入
 router.post('/signIn', signIn)
+// signOut 登出
+router.delete('/signOut', auth, signOut)
 
 export default router

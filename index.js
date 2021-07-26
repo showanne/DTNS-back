@@ -72,7 +72,7 @@ app.use('/users', userRouter)
 // 擋住 404 不要讓 express 去處理
 // '*' 表示全部
 app.all('*', (req, res) => {
-  res.status(404)({
+  res.status(404).send({
     success: false,
     message: '找不到內容'
   })

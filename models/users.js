@@ -61,10 +61,10 @@ const UserSchema = new Schema({
   editor: {
     type: [
       {
-        content: {
+        article: {
           type: Schema.Types.ObjectId,
-          ref: 'content',
-          required: [true, '沒有文章']
+          ref: 'article'
+          // required: [true, '沒有文章']
         }
       }
     ]

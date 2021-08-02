@@ -3,6 +3,8 @@ import auth from '../middleware/auth.js'
 import {
   signUp,
   signIn,
+  signInLine,
+  signInLineData,
   signOut
 } from '../controllers/users.js'
 
@@ -15,6 +17,8 @@ const router = express.Router()
 router.post('/', signUp)
 // signIn 登入
 router.post('/signIn', signIn)
+router.get('/signInLineData', signInLineData)
+router.get('/signInLine', signInLine)
 // signOut 登出
 router.delete('/signOut', auth, signOut)
 

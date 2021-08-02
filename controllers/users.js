@@ -1,6 +1,8 @@
 import md5 from 'md5' // 加密套件
 import jwt from 'jsonwebtoken' // 驗證套件
 import users from '../models/users.js'
+import axios from 'axios'
+import Qs from 'qs'
 
 // signUp 註冊  / POST http://localhost:xx/users
 export const signUp = async (req, res) => {
@@ -85,7 +87,7 @@ export const signIn = async (req, res) => {
           success: true,
           message: '登入成功',
           token,
-          email: user.email,
+          // email: user.email,
           account: user.account,
           role: user.role
         })
@@ -132,4 +134,60 @@ export const signOut = async (req, res) => {
     })
   }
   console.log('SignOut 登出')
+}
+
+// signInLine line登入  /  GET http://localhost:xx/users/signInLine
+export const signInLine = async (req, res) => {
+  try {
+    const options = Qs.stringify({
+      grant_type: 'authorization_code',
+      code: req.query.code,
+      redirect_uri: process.env.CALLBACK_URL,
+      client_id: process.env.CHANNEL_ID,
+      client_secret: process.env.CHANNEL_SECRET
+    })
+    const { data } = await axios.post('https://api.line.me/oauth2/v2.1/token', options, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+    const decoded = jwt.decode(data.id_token)
+    let result = await users.findOne({ line: decoded.sub })
+    if (result === null) {
+      // 新使用者
+      result = await users.create({ line: decoded.sub })
+    }
+
+    const myjwt = jwt.sign({ _id: result._id.toString() }, process.env.SECRET, { expiresIn: '7 days' })
+    result.avatar = decoded.picture
+    result.name = decoded.name
+    result.tokens.push({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+      id_token: data.id_token,
+      jwt: myjwt
+    })
+    result.save()
+    res.redirect(process.env.FRONT_URL + '?jwt=' + myjwt)
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({
+      success: false,
+      message: '伺服器錯誤'
+    })
+  }
+  console.log('signInLine line登入')
+}
+
+export const signInLineData = async (req, res) => {
+  res.status(200).send({
+    success: true,
+    message: '',
+    result: req.user,
+    name: req.user.name,
+    avatar: req.user.avatar,
+    role: req.user.role
+  })
+
+  console.log('signInLineData Line登入換資料')
 }

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose' // MongoDB 操作套件
-import validator from 'validator' // 驗證套件
+// import validator from 'validator' // 驗證套件
 import md5 from 'md5' // 加密套件
 
 const Schema = mongoose.Schema
@@ -15,7 +15,7 @@ const UserSchema = new Schema({
     // 最大長度 20 與自訂的錯誤訊息
     maxlength: [20, '帳號最多 20 個字'],
     // 必填與自訂的錯誤訊息
-    required: [true, '缺少帳號欄位'],
+    // required: [true, '缺少帳號欄位'],
     // 設定不可重複，這裡的驗證無法使用自訂錯誤訊息，除非安裝套件
     unique: true
   },
@@ -26,26 +26,22 @@ const UserSchema = new Schema({
     // 最小長度 4 與自訂的錯誤訊息
     minlength: [4, '密碼最少須 4 個字'],
     // 最大長度 20 與自訂的錯誤訊息
-    maxlength: [20, '密碼最多 20 個字'],
+    maxlength: [20, '密碼最多 20 個字']
     // 必填與自訂的錯誤訊息
-    required: [true, '缺少密碼欄位']
+    // required: [true, '缺少密碼欄位']
   },
-  // 大頭貼
-  avatar: {
-    type: String
-  },
-  email: {
-    type: String,
-    required: [true, '缺少信箱欄位'],
-    unique: true,
-    // 自訂驗證，安裝套件 npm i validator
-    validate: {
-      validator (value) {
-        return validator.isEmail(value)
-      },
-      message: '信箱格式不正確'
-    }
-  },
+  // email: {
+  //   type: String,
+  //   required: [true, '缺少信箱欄位'],
+  //   unique: true,
+  // 自訂驗證，安裝套件 npm i validator
+  //   validate: {
+  //     validator (value) {
+  //       return validator.isEmail(value)
+  //     },
+  //     message: '信箱格式不正確'
+  //   }
+  // },
   // 使用者分類
   role: {
     // 0 一般會員
@@ -56,7 +52,26 @@ const UserSchema = new Schema({
     required: [true, '沒有使用者分類']
   },
   tokens: {
-    type: [String]
+    type: [
+      {
+        access_token: String,
+        refresh_token: String,
+        id_token: String,
+        jwt: String
+      }
+    ]
+  },
+  // 大頭貼
+  avatar: {
+    type: String
+  },
+  // LINE ID
+  line: {
+    type: String
+  },
+  // LINE 名字
+  name: {
+    type: String
   },
   editor: {
     type: [

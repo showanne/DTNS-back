@@ -136,9 +136,10 @@ export const signOut = async (req, res) => {
   console.log('SignOut 登出')
 }
 
-// signInLine line登入  /  GET http://localhost:xx/users/signInLine
+// signInLine Line登入  /  GET http://localhost:xx/users/signInLine
 export const signInLine = async (req, res) => {
   try {
+    //  Qs 將回傳的 JSON 轉 form-urlencoded 格式， line 才可以接受資料
     const options = Qs.stringify({
       grant_type: 'authorization_code',
       code: req.query.code,
@@ -146,28 +147,61 @@ export const signInLine = async (req, res) => {
       client_id: process.env.CHANNEL_ID,
       client_secret: process.env.CHANNEL_SECRET
     })
+
     const { data } = await axios.post('https://api.line.me/oauth2/v2.1/token', options, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
+    //   "access_token": "" 有效期間為 30 天的 Access token。
+    //   "expires_in": "" 過期之前的秒數。
+    //   "token_type": "Bearer"
+    //   "refresh_token": "" 取得新的 Access token，所需要的 Token。
+    //   "scope": "openid profile" 使用者提供的權限
+    //   "id_token": "" 包含用戶資訊的 JWT (Scopes 需有 openid)
+
+    // 解析回傳的 id_Token
     const decoded = jwt.decode(data.id_token)
+
+    //   "iss": "https://access.line.me 簽發 id_token",
+    //   "sub": "我的 Line UserID",
+    //   "aud": "CHANNEL_ID",
+    //   "exp": token 有效期限,
+    //   "iat": token 簽發時間,
+    //   "amr": [ "line 登入方式" ],
+    //   "name": "我的 Line User 顯示名稱",
+    //   "picture": "我的 Line User 大頭貼"
+
+    // 查詢是否有使用者資料有這個 line UserID (sub) 紀錄的 lineID ，順便寫入資料庫 line 欄位裡以便後續使用
     let result = await users.findOne({ line: decoded.sub })
     if (result === null) {
-      // 新使用者
+      // 如果是新使用者，就創建一個新帳號
       result = await users.create({ line: decoded.sub })
     }
 
-    const myjwt = jwt.sign({ _id: result._id.toString() }, process.env.SECRET, { expiresIn: '7 days' })
+    // 重新簽發一個我的 jwt
+    const myjwt = jwt.sign(
+      // jwt 內容資料
+      { _id: result._id.toString() },
+      // 加密用的key
+      process.env.SECRET,
+      // jwt 設定有效期為7天
+      { expiresIn: '7 days' }
+    )
+
     result.avatar = decoded.picture
     result.name = decoded.name
+
+    // 把序號存入使用者資料
     result.tokens.push({
       access_token: data.access_token,
       refresh_token: data.refresh_token,
       id_token: data.id_token,
       jwt: myjwt
     })
-    result.save()
+    // 儲存之前不驗證就存入
+    result.save({ validateBeforeSave: false })
+    // 重新將請求導回前台
     res.redirect(process.env.FRONT_URL + '?jwt=' + myjwt)
   } catch (error) {
     console.log(error)
@@ -176,18 +210,47 @@ export const signInLine = async (req, res) => {
       message: '伺服器錯誤'
     })
   }
-  console.log('signInLine line登入')
+  console.log('signInLine Line登入')
 }
 
 export const signInLineData = async (req, res) => {
-  res.status(200).send({
-    success: true,
-    message: '',
-    result: req.user,
-    name: req.user.name,
-    avatar: req.user.avatar,
-    role: req.user.role
-  })
+  // console.log(req)
 
+  try {
+    // 從 header 驗證取出 jwt，將 Bearer Token 取代成 Token
+    const token = req.headers.authorization ? req.headers.authorization.replace('Bearer ', '') : ''
+    // console.log(token)
+    // 如果有 jwt
+    if (token.length > 0) {
+    // 解碼 jwt
+      const decoded = jwt.verify(token, process.env.SECRET)
+      // console.log(decoded)
+      // 取出裡面紀錄的使用者 id
+      const _id = decoded._id
+      // 查詢是否有使用者資料有 jwt 紀錄的 _id
+      req.user = await users.findOne({ _id })
+      // console.log(req.user.name)
+
+      res.status(200).send({
+        success: true,
+        message: '登入成功',
+        // result: req.user
+        token: token,
+        name: req.user.name,
+        avatar: req.user.avatar,
+        role: req.user.role
+      })
+    } else {
+    // 沒有 jwt，觸發錯誤，讓程式進 catch
+      throw new Error()
+    }
+  } catch (error) {
+    console.log(error)
+    // .send() 送資料出去
+    res.status(401).send({
+      success: false,
+      message: error
+    })
+  }
   console.log('signInLineData Line登入換資料')
 }

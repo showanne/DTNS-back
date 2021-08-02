@@ -7,6 +7,10 @@ import cors from 'cors' // 跨域套件
 // 資料的路由
 import userRouter from './routes/users.js'
 
+// linebot 機器人
+import routeBot from './bot/index.js'
+// import bot from './bot'
+
 dotenv.config()
 
 // 連接資料庫  /  解決 mongoose 警示訊息
@@ -50,6 +54,9 @@ app.use((_, req, res, next) => {
     message: '請求被拒絕'
   })
 })
+
+// linebot 機器人
+app.use('/bot', routeBot)
 
 // bodyparser 將資料處理成 json 格式
 app.use(bodyParser.json())

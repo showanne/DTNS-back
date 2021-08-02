@@ -119,7 +119,8 @@ export const signOut = async (req, res) => {
   try {
     // req.user.tokens (登出時回傳的 tokens) 是不是不等於傳進來的
     // 如果不等於會被留下；等於的會被踢掉(登出後刪除 tokens)
-    req.user.tokens = req.user.tokens.filter(token => token !== req.token)
+    console.log(req.user.tokens)
+    req.user.tokens = req.user.tokens.filter(token => token.jwt !== req.token)
     // 儲存之前不驗證就存入
     req.user.save({ validateBeforeSave: false })
     res.status(200).send({
@@ -139,7 +140,7 @@ export const signOut = async (req, res) => {
 // signInLine Line登入  /  GET http://localhost:xx/users/signInLine
 export const signInLine = async (req, res) => {
   try {
-    //  Qs 將回傳的 JSON 轉 form-urlencoded 格式， line 才可以接受資料
+    //  Qs 將回傳的 JSON 轉 form-urlencoded 格式， line 才可以接收資料
     const options = Qs.stringify({
       grant_type: 'authorization_code',
       code: req.query.code,
@@ -148,6 +149,7 @@ export const signInLine = async (req, res) => {
       client_secret: process.env.CHANNEL_SECRET
     })
 
+    // 跟 line 請求 使用者資料
     const { data } = await axios.post('https://api.line.me/oauth2/v2.1/token', options, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
@@ -213,6 +215,7 @@ export const signInLine = async (req, res) => {
   console.log('signInLine Line登入')
 }
 
+// signInLineData Line登入換資料  /  GET http://localhost:xx/users/signInLineData
 export const signInLineData = async (req, res) => {
   // console.log(req)
 

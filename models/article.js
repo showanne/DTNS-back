@@ -26,7 +26,9 @@ const ArticleSchema = new Schema({
   },
   share: {
     type: Boolean
-    // required: [true, '是否要分享'] // 預設為 true 要分享
+    // required: [true, '是否要分享']
+    // default: true // 預設為 true 要分享
+
   },
   image: {
     type: String

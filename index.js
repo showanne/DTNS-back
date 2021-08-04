@@ -7,6 +7,7 @@ import cors from 'cors' // 跨域套件
 // 資料的路由
 import userRouter from './routes/users.js'
 import articleRouter from './routes/article.js'
+import fileRouter from './routes/file.js'
 
 // linebot 機器人
 import routeBot from './bot/index.js'
@@ -77,6 +78,7 @@ app.use((_, req, res, next) => {
 // 根據傳進來的路由判斷由哪個預設的請求來回應
 app.use('/users', userRouter)
 app.use('/article', articleRouter)
+app.use('/file', fileRouter)
 
 // 擋住 404 不要讓 express 去處理
 // '*' 表示全部

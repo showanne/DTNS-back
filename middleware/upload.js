@@ -104,7 +104,7 @@ export default async (req, res, next) => {
       // req.file 是傳入的檔案資訊
       if (req.file) {
         // 將檔案儲存路徑放到 req
-        // console.log(req.file)
+        console.log(req.file)
         // req.file.path = req.file.filename
         // 2個套件的存取路徑不同
         req.filepath = process.env.FTP ? path.basename(req.file.path) : req.file.filename

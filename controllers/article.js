@@ -124,7 +124,7 @@ export const getArticleById = async (req, res) => {
     if (error.name === 'CastError') {
       res.status(404).send({
         success: false,
-        message: '查無商品'
+        message: '查無此文章'
       })
     } else {
       res.status(500).send({

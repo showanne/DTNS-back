@@ -61,10 +61,40 @@ export const newArticle = async (req, res) => {
   console.log('newArticle 新增文章')
 }
 
-// getArticle 取得所有文章  /  GET http://localhost:xx/article
+// getArticle 取得文章  /  GET http://localhost:xx/article
 export const getArticle = async (req, res) => {
   try {
+    // 尋找文章
+    // find() 內可以指定搜尋條件 ex: share: true
+    const result = await article.find({ share: true })
+    res.status(200).send({
+      success: true,
+      message: '',
+      result
+    })
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: '伺服器錯誤'
+    })
+  }
+  console.log('getArticle 取得文章')
+}
+
+// getAllArticle 取得所有文章  /  GET http://localhost:xx/article/all
+export const getAllArticle = async (req, res) => {
+  // 驗證權限是否為管理員
+  if (req.user.role !== 1) {
+    res.status(403).send({
+      success: false,
+      message: '沒有權限'
+    })
+    // 驗證沒過就不跑接下來的程式，也可以後面都用 else 包起來
+    return
+  }
+  try {
     // 尋找所有文章
+    // find() 內可以指定搜尋條件 ex: share: true
     const result = await article.find()
     res.status(200).send({
       success: true,
@@ -73,11 +103,37 @@ export const getArticle = async (req, res) => {
     })
   } catch (error) {
     res.status(500).send({
-      success: true,
+      success: false,
       message: '伺服器錯誤'
     })
   }
-  console.log('getArticle 取得所有文章')
+  console.log('getAllArticle 取得所有文章')
+}
+
+// getArticleById 取得個別文章  /  GET http://localhost:xx/article/:id
+export const getArticleById = async (req, res) => {
+  try {
+    // .findById() 尋找傳進來的那個 ID 的文章
+    const result = await article.findById(req.params.id)
+    res.status(200).send({
+      success: true,
+      message: '',
+      result
+    })
+  } catch (error) {
+    if (error.name === 'CastError') {
+      res.status(404).send({
+        success: false,
+        message: '查無商品'
+      })
+    } else {
+      res.status(500).send({
+        success: false,
+        message: '伺服器錯誤'
+      })
+    }
+  }
+  console.log('getArticleById 取得個別文章')
 }
 
 // editArticle 編輯文章  /  PATCH http://localhost:xx/article/:id

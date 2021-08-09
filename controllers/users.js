@@ -79,8 +79,9 @@ export const signIn = async (req, res) => {
           // jwt 設定有效期
           { expiresIn: '7 days' }
         )
+        console.log(token)
         // 把序號存入使用者資料
-        user.tokens.push(token)
+        user.tokens.push({ jwt: token })
         // 儲存之前不驗證就存入
         user.save({ validateBeforeSave: false })
         res.status(200).send({

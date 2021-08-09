@@ -24,11 +24,9 @@ const ArticleSchema = new Schema({
   title: {
     type: String
   },
+  // 公開分享
   share: {
     type: Boolean
-    // required: [true, '是否要分享']
-    // default: true // 預設為 true 要分享
-
   },
   image: {
     type: String
@@ -46,9 +44,25 @@ const ArticleSchema = new Schema({
   select: {
     type: String
   },
+  // 編輯日期
   date: {
     type: Date
-    // required: [true, '缺少編輯日期']
+  },
+  // 被檢舉
+  report: {
+    type: Boolean
+  },
+  // 按讚人次
+  likeNum: {
+    type: Array
+  },
+  // 儲存人次
+  saveNum: {
+    type: Array
+  },
+  // 分享人次
+  shareNum: {
+    type: Array
   }
 }, { versionKey: false })
 

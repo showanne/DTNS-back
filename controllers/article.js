@@ -73,23 +73,34 @@ export const newArticleForMember = async (req, res) => {
     })
   }
   try {
+    let author = ''
+    if (req.user.name) {
+      author = req.user.name
+    } else {
+      author = req.user.account
+    }
     // 新增一筆回復，塞進 models
     const result = await article.create({
       template: req.body.template,
       title: req.body.title,
+      author: author,
       share: req.body.share,
       image: req.filepath,
       textarea: req.body.textarea,
+      source: req.body.source,
       text: req.body.text,
       datepicker: req.body.datepicker,
       select: req.body.select,
       date: req.body.date
     })
+    req.user.editor.push(result)
     res.status(200).send({
       success: true,
       message: '',
       result
     })
+    // 不驗證就存入
+    await req.user.save({ validateBeforeSave: false })
   } catch (error) {
     if (error.name === 'validationError') {
       // 如果錯誤訊息是驗證錯誤
@@ -112,7 +123,7 @@ export const newArticleForMember = async (req, res) => {
   console.log('newArticleForMember 新增文章')
 }
 
-// getArticle 取得文章  /  GET http://localhost:xx/article
+// getArticle 取得文章(一般會員看)  /  GET http://localhost:xx/article
 export const getArticle = async (req, res) => {
   try {
     // 尋找文章
@@ -132,7 +143,7 @@ export const getArticle = async (req, res) => {
   console.log('getArticle 取得文章')
 }
 
-// getAllArticle 取得所有文章  /  GET http://localhost:xx/article/all
+// getAllArticle 取得所有文章(後台管理看)  /  GET http://localhost:xx/article/all
 export const getAllArticle = async (req, res) => {
   // 驗證權限是否為管理員
   if (req.user.role !== 1) {

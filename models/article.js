@@ -24,6 +24,14 @@ const ArticleSchema = new Schema({
   title: {
     type: String
   },
+  // 作者
+  author: {
+    type: String
+  },
+  // 來源 引用出處
+  source: {
+    type: String
+  },
   // 公開分享
   share: {
     type: Boolean

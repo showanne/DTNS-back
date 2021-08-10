@@ -5,6 +5,7 @@ import {
   newArticle,
   newArticleForMember,
   getArticle,
+  getArticleByTemp,
   getAllArticle,
   getArticleById,
   editArticle
@@ -20,6 +21,8 @@ router.post('/', upload, newArticle)
 router.post('/member', auth, upload, newArticleForMember)
 // getArticle 取得文章 條件設定為有開放(share)的 (一般會員看)
 router.get('/', getArticle)
+// getArticleByTemp 取得指定分類的文章(一般會員看)
+router.get('/template/:template', getArticleByTemp)
 // getAllArticle 取得所有文章 (後台管理看)
 router.get('/all', auth, getAllArticle)
 // getArticleById 取得個別文章

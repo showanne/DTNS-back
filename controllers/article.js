@@ -125,6 +125,7 @@ export const newArticleForMember = async (req, res) => {
 
 // getArticle 取得文章(一般會員看)  /  GET http://localhost:xx/article
 export const getArticle = async (req, res) => {
+  console.log(req.params)
   try {
     // 尋找文章
     // find() 內可以指定搜尋條件 ex: share: true
@@ -141,6 +142,29 @@ export const getArticle = async (req, res) => {
     })
   }
   console.log('getArticle 取得文章')
+}
+
+// getArticleByTemp 取得指定分類的文章(一般會員看)  /  GET http://localhost:xx/article/:template
+export const getArticleByTemp = async (req, res) => {
+  try {
+    // 尋找文章
+    // find() 內可以指定搜尋條件
+    const result = await article.find({
+      share: true,
+      template: req.params.template
+    })
+    res.status(200).send({
+      success: true,
+      message: '',
+      result
+    })
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: '伺服器錯誤'
+    })
+  }
+  console.log('getArticleByTemp 取得指定分類的文章')
 }
 
 // getAllArticle 取得所有文章(後台管理看)  /  GET http://localhost:xx/article/all

@@ -9,8 +9,8 @@ const ArticleSchema = new Schema({
   },
   // 文章類型
   template: {
-    // 0 便利貼 #postIt
-    // 1 美字美句分享 #share
+    // 0 美字美句分享 #share
+    // 1 便利貼 #postIt
     // 2 待辦事項 #todo
     // 3 心情隨筆 #diary
     // 4 筆記 #notes

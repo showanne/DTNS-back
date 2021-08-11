@@ -28,8 +28,8 @@ const ArticleSchema = new Schema({
   author: {
     type: String
   },
-  // 來源 引用出處
-  source: {
+  // 作者大頭照
+  avatar: {
     type: String
   },
   // 公開分享

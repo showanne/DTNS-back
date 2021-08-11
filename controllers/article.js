@@ -17,6 +17,8 @@ export const newArticle = async (req, res) => {
     const result = await article.create({
       template: req.body.template,
       title: req.body.title,
+      author: req.body.author,
+      avatar: req.body.avatar,
       share: req.body.share,
       image: req.filepath,
       textarea: req.body.textarea,
@@ -73,21 +75,21 @@ export const newArticleForMember = async (req, res) => {
     })
   }
   try {
-    let author = ''
-    if (req.user.name) {
-      author = req.user.name
-    } else {
-      author = req.user.account
-    }
+    // let author = ''
+    // if (req.user.name) {
+    //   author = req.user.name
+    // } else {
+    //   author = req.user.account
+    // }
     // 新增一筆回復，塞進 models
     const result = await article.create({
       template: req.body.template,
       title: req.body.title,
-      author: author,
+      author: req.body.author,
+      avatar: req.body.avatar,
       share: req.body.share,
       image: req.filepath,
       textarea: req.body.textarea,
-      source: req.body.source,
       text: req.body.text,
       datepicker: req.body.datepicker,
       select: req.body.select,

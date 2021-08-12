@@ -1,6 +1,7 @@
 import article from '../models/article.js'
+import users from '../models/users.js'
 
-// newArticle 新增文章  /  POST http://localhost:xx/article
+// newArticle 新增文章 (訪客)  /  POST http://localhost:xx/article
 export const newArticle = async (req, res) => {
   // TODO: 訪客不驗證避免無法傳入資料
   // 檢查進來的資料格式
@@ -51,10 +52,10 @@ export const newArticle = async (req, res) => {
       })
     }
   }
-  console.log('newArticle 新增文章')
+  console.log('newArticle 新增文章 (訪客)')
 }
 
-// newArticleForMember 新增文章  /  POST http://localhost:xx/article/member
+// newArticleForMember 新增文章 (會員)  /  POST http://localhost:xx/article/member
 export const newArticleForMember = async (req, res) => {
   // 驗證權限是否為會員或管理員
   // 一般訪客 -1 / 一般會員 0 / 管理者 1
@@ -95,7 +96,7 @@ export const newArticleForMember = async (req, res) => {
       select: req.body.select,
       date: req.body.date
     })
-    req.user.editor.push(result)
+    req.user.editor.push({ article: result })
     res.status(200).send({
       success: true,
       message: '',
@@ -122,10 +123,10 @@ export const newArticleForMember = async (req, res) => {
       })
     }
   }
-  console.log('newArticleForMember 新增文章')
+  console.log('newArticleForMember 新增文章 (會員)')
 }
 
-// getArticle 取得文章(一般會員看)  /  GET http://localhost:xx/article
+// getArticle 取得所有文章 (訪客)  /  GET http://localhost:xx/article
 export const getArticle = async (req, res) => {
   console.log(req.params)
   try {
@@ -143,10 +144,10 @@ export const getArticle = async (req, res) => {
       message: '伺服器錯誤'
     })
   }
-  console.log('getArticle 取得文章')
+  console.log('getArticle 取得所有文章 (訪客)')
 }
 
-// getArticleByTemp 取得指定分類的文章(一般會員看)  /  GET http://localhost:xx/article/:template
+// getArticleByTemp 取得指定分類的文章 (訪客)  /  GET http://localhost:xx/article/template/:template
 export const getArticleByTemp = async (req, res) => {
   try {
     // 尋找文章
@@ -166,10 +167,48 @@ export const getArticleByTemp = async (req, res) => {
       message: '伺服器錯誤'
     })
   }
-  console.log('getArticleByTemp 取得指定分類的文章')
+  console.log('getArticleByTemp 取得指定分類的文章 (訪客)')
 }
 
-// getAllArticle 取得所有文章(後台管理看)  /  GET http://localhost:xx/article/all
+// getArticleByTempForMember 取得指定分類的文章 (會員)  /  GET http://localhost:xx/article/member/template/:template
+export const getArticleByTempForMember = async (req, res) => {
+  // 驗證權限是否為會員或管理員
+  // 一般訪客 -1 / 一般會員 0 / 管理者 1
+  if (req.user.role === -1) {
+    res.status(403).send({
+      success: false,
+      message: '沒有權限'
+    })
+    // 驗證沒過就不跑接下來的程式，也可以後面都用 else 包起來
+    return
+  }
+
+  try {
+    // 尋找傳進來 id 的那位會員的資料，只取 editor 欄位
+    // .populate 可以將 ref 欄位的資料帶出來 -> ref: 'article'
+    const { editor } = await users.findById(req.user._id, 'editor').populate('editor.article')
+    console.log(editor)
+    // 尋找文章
+    // find() 內可以指定搜尋條件
+    const articleTemp = editor.find(
+      temp => temp.article.template === req.params.template
+    )
+    console.log('articleTemp' + articleTemp)
+    res.status(200).send({
+      success: true,
+      message: '',
+      result: editor
+    })
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: '伺服器錯誤'
+    })
+  }
+  console.log('getArticleByTempForMember 取得指定分類的文章 (會員)')
+}
+
+// getAllArticle 取得所有文章(管理者)  /  GET http://localhost:xx/article/all
 export const getAllArticle = async (req, res) => {
   // 驗證權限是否為管理員
   if (req.user.role !== 1) {
@@ -292,3 +331,13 @@ export const editArticle = async (req, res) => {
   }
   console.log('editArticle 編輯文章')
 }
+
+// deleteArticle 刪除文章  /  DELETE http://localhost:xx/article/member/id
+// export const deleteArticle = async (req, res) => {
+//   try {
+
+//   } catch (error) {
+
+//   }
+//   console.log('deleteArticle 會員刪除文章')
+// }

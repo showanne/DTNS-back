@@ -9,7 +9,9 @@ import {
   getArticleByTempForMember,
   getAllArticle,
   getArticleById,
-  editArticle
+  editArticleForManage,
+  editArticleForMember,
+  deleteArticleForMember
 } from '../controllers/article.js'
 
 const router = express.Router()
@@ -32,11 +34,11 @@ router.get('/all', auth, getAllArticle)
 // getArticleById 取得個別文章
 router.get('/:id', getArticleById)
 // get 順序需先 /all 再 /:id 否則 all 會被當成 id
-// editArticle 編輯文章
-router.patch('/:id', auth, upload, editArticle)
+// editArticleForManage 移除文章 (管理)
+router.patch('/:id', auth, editArticleForManage)
 // editArticle 編輯文章 (會員)
-// router.post('/member/:id', auth, upload, editArticleForMember)
-// editArticle 編輯文章 (管理者) (僅檢舉移除文章顯示功能)
-// router.post('/manager/:id', auth, upload, editArticleForManager)
+router.patch('/member/:id', auth, upload, editArticleForMember)
+// deleteArticle 刪除文章 (會員)
+router.delete('/member/:id', auth, deleteArticleForMember)
 
 export default router

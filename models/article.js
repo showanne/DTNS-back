@@ -60,6 +60,10 @@ const ArticleSchema = new Schema({
   report: {
     type: Boolean
   },
+  // 移除文章
+  remove: {
+    type: Boolean
+  },
   // 按讚人次
   likeNum: {
     type: Array

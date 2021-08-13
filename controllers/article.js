@@ -263,8 +263,50 @@ export const getArticleById = async (req, res) => {
   console.log('getArticleById 取得個別文章')
 }
 
-// editArticle 編輯文章  /  PATCH http://localhost:xx/article/:id
-export const editArticle = async (req, res) => {
+// editArticleForManage 移除文章 (管理)  /  PATCH http://localhost:xx/article/:id
+export const editArticleForManage = async (req, res) => {
+  // 驗證權限是否為管理員
+  if (req.user.role !== 1) {
+    res.status(403).send({
+      success: false,
+      message: '沒有權限'
+    })
+    // 驗證沒過就不跑接下來的程式，也可以後面都用 else 包起來
+    return
+  }
+  try {
+    const remove = {
+      share: false,
+      remove: req.body.remove
+    }
+
+    // findByIdAndUpdate 尋找符合傳進來的 id 的那筆
+    const result = await article.findByIdAndUpdate(
+      req.params.id,
+      remove,
+      { new: true }
+    )
+    // { new: true } 回傳新的結果
+    res.status(200).send({
+      success: true,
+      message: '',
+      result
+    })
+    res.status(200).send({
+      success: true,
+      message: ''
+    })
+  } catch (error) {
+    res.status(500).send({
+      success: true,
+      message: '伺服器錯誤'
+    })
+  }
+  console.log('editArticleForManage 移除文章 (管理)')
+}
+
+// editArticleForMember 編輯文章 (會員)  /  PATCH http://localhost:xx/article/member/:id
+export const editArticleForMember = async (req, res) => {
   // NOTE: 訪客不需要編輯文章
   // 驗證權限是否為會員或管理員
   // 一般訪客 -1 / 一般會員 0 / 管理者 1
@@ -329,15 +371,34 @@ export const editArticle = async (req, res) => {
       })
     }
   }
-  console.log('editArticle 編輯文章')
+  console.log('editArticleForMember 編輯文章 (會員)')
 }
 
-// deleteArticle 刪除文章  /  DELETE http://localhost:xx/article/member/id
-// export const deleteArticle = async (req, res) => {
-//   try {
-
-//   } catch (error) {
-
-//   }
-//   console.log('deleteArticle 會員刪除文章')
-// }
+// deleteArticleForMember 刪除文章 (會員)  /  DELETE http://localhost:xx/article/member/id
+export const deleteArticleForMember = async (req, res) => {
+  try {
+    await users.findOneAndUpdate(
+      { 'editor.article': req.body.article },
+      {
+        // 刪除陣列，裡面放條件
+        $pull: {
+          // 要刪除的陣列的欄位名稱
+          editor: {
+            // 符合傳進來的 article
+            article: req.body.article
+          }
+        }
+      }
+    )
+    res.status(200).send({
+      success: true,
+      message: ''
+    })
+  } catch (error) {
+    res.status(500).send({
+      success: true,
+      message: '伺服器錯誤'
+    })
+  }
+  console.log('deleteArticleForMember 刪除文章 (會員)')
+}

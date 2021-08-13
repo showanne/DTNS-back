@@ -61,7 +61,7 @@ const ArticleSchema = new Schema({
     type: Boolean
   },
   // 移除文章
-  remove: {
+  publicOff: {
     type: Boolean
   },
   // 按讚人次

@@ -1,5 +1,6 @@
 import article from '../models/article.js'
 import users from '../models/users.js'
+// import inspect from 'util-inspect' // 展開 [object Object] 套件
 
 // newArticle 新增文章 (訪客)  /  POST http://localhost:xx/article
 export const newArticle = async (req, res) => {
@@ -89,6 +90,7 @@ export const newArticleForMember = async (req, res) => {
       author: req.body.author,
       avatar: req.body.avatar,
       share: req.body.share,
+      publicOff: req.body.publicOff,
       image: req.filepath,
       textarea: req.body.textarea,
       text: req.body.text,
@@ -182,18 +184,25 @@ export const getArticleByTempForMember = async (req, res) => {
     // 驗證沒過就不跑接下來的程式，也可以後面都用 else 包起來
     return
   }
-
+  console.log(req.params)
   try {
     // 尋找傳進來 id 的那位會員的資料，只取 editor 欄位
     // .populate 可以將 ref 欄位的資料帶出來 -> ref: 'article'
     const { editor } = await users.findById(req.user._id, 'editor').populate('editor.article')
     console.log(editor)
+    // const article = { ...editor }
+    // console.log('article' + inspect({ article }))
+
     // 尋找文章
     // find() 內可以指定搜尋條件
-    const articleTemp = editor.find(
-      temp => temp.article.template === req.params.template
-    )
-    console.log('articleTemp' + articleTemp)
+    // const articleTemp = article.find({
+    //   template: req.params.template
+    // })
+    // const result = await article.find({
+    //   share: true,
+    //   template: req.params.template
+    // })
+    // console.log('articleTemp' + articleTemp)
     res.status(200).send({
       success: true,
       message: '',
@@ -275,23 +284,22 @@ export const editArticleForManage = async (req, res) => {
     return
   }
   try {
-    const remove = {
-      share: false,
-      remove: req.body.remove
-    }
-
+    console.log(req.body)
     // findByIdAndUpdate 尋找符合傳進來的 id 的那筆
-    const result = await article.findByIdAndUpdate(
-      req.params.id,
-      remove,
-      { new: true }
+    await article.findOneAndUpdate(
+      // 找到 article 裡符合傳入的商品 ID
+      {
+        article: req.body.article
+      },
+      // 將該筆改為傳入的數量， $ 代表符合查詢條件的索引
+      {
+        $set: {
+          'article.publicOff': req.body.publicOff,
+          'article.share': req.body.share
+        }
+      }
     )
     // { new: true } 回傳新的結果
-    res.status(200).send({
-      success: true,
-      message: '',
-      result
-    })
     res.status(200).send({
       success: true,
       message: ''

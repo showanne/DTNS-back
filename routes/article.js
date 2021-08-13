@@ -35,7 +35,7 @@ router.get('/all', auth, getAllArticle)
 router.get('/:id', getArticleById)
 // get 順序需先 /all 再 /:id 否則 all 會被當成 id
 // editArticleForManage 移除文章 (管理)
-router.patch('/:id', auth, editArticleForManage)
+router.patch('/all', auth, editArticleForManage)
 // editArticle 編輯文章 (會員)
 router.patch('/member/:id', auth, upload, editArticleForMember)
 // deleteArticle 刪除文章 (會員)

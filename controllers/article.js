@@ -1,6 +1,6 @@
 import article from '../models/article.js'
 import users from '../models/users.js'
-// import inspect from 'util-inspect' // 展開 [object Object] 套件
+import { inspect } from 'util' // 展開 [object Object] 套件
 
 // newArticle 新增文章 (訪客)  /  POST http://localhost:xx/article
 export const newArticle = async (req, res) => {
@@ -48,7 +48,7 @@ export const newArticle = async (req, res) => {
       })
     } else {
       res.status(500).send({
-        success: true,
+        success: false,
         message: '伺服器錯誤'
       })
     }
@@ -189,9 +189,9 @@ export const getArticleByTempForMember = async (req, res) => {
     // 尋找傳進來 id 的那位會員的資料，只取 editor 欄位
     // .populate 可以將 ref 欄位的資料帶出來 -> ref: 'article'
     const { editor } = await users.findById(req.user._id, 'editor').populate('editor.article')
-    console.log(editor)
+    // console.log(editor)
     // const article = { ...editor }
-    // console.log('article' + inspect({ article }))
+    console.log('article' + inspect({ article }))
 
     // 尋找文章
     // find() 內可以指定搜尋條件
@@ -285,17 +285,18 @@ export const editArticleForManage = async (req, res) => {
   }
   try {
     console.log(req.body)
+    console.log(article)
     // findByIdAndUpdate 尋找符合傳進來的 id 的那筆
     await article.findOneAndUpdate(
-      // 找到 article 裡符合傳入的商品 ID
+      // 找到 article 裡符合傳入的文章 ID
       {
-        article: req.body.article
+        _id: req.body.article
       },
       // 將該筆改為傳入的數量， $ 代表符合查詢條件的索引
       {
         $set: {
-          'article.publicOff': req.body.publicOff,
-          'article.share': req.body.share
+          publicOff: req.body.publicOff,
+          share: req.body.share
         }
       }
     )

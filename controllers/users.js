@@ -17,12 +17,14 @@ export const signUp = async (req, res) => {
     return
   }
   try {
+    // console.log(req.body)
     await users.create(req.body)
     res.status(200).send({
       success: true,
       message: ''
     })
   } catch (error) {
+    // console.log(error)
     if (error.name === 'validationError') {
       // 如果錯誤訊息是驗證錯誤
       // 錯誤的訊息的 key 值為欄位名稱，不固定
@@ -257,4 +259,31 @@ export const signInLineData = async (req, res) => {
     })
   }
   console.log('signInLineData Line登入換資料')
+}
+// getUsers 取得所有使用者  /  GET http://localhost:xx/users
+export const getUsers = async (req, res) => {
+  // 驗證權限是否為管理員
+  if (req.user.role !== 1) {
+    res.status(403).send({
+      success: false,
+      message: '沒有權限'
+    })
+    // 驗證沒過就不跑接下來的程式，也可以後面都用 else 包起來
+    return
+  }
+  try {
+    // 尋找所有使用者
+    const result = await users.find()
+    res.status(200).send({
+      success: true,
+      message: '',
+      result
+    })
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: '伺服器錯誤'
+    })
+  }
+  console.log('getUsers 取得所有使用者')
 }

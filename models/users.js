@@ -30,10 +30,10 @@ const UserSchema = new Schema({
     // 必填與自訂的錯誤訊息
     // required: [true, '缺少密碼欄位']
   },
-  email: {
-    type: String
+  // email: {
+  //   type: String
   //   required: [true, '缺少信箱欄位'],
-    // unique: true,
+  // unique: true,
   // 自訂驗證，安裝套件 npm i validator
   //   validate: {
   //     validator (value) {
@@ -41,7 +41,7 @@ const UserSchema = new Schema({
   //     },
   //     message: '信箱格式不正確'
   //   }
-  },
+  // },
   // 使用者分類
   role: {
     // 0 一般會員

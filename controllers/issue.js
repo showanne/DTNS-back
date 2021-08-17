@@ -53,11 +53,11 @@ export const addIssue = async (req, res) => {
   console.log('addIssue 新增問題 (訪客)')
 }
 
-// getIssue 取得問題 (訪客)  /  GET http://localhost:xx/article
+// getIssue 取得問題 (訪客)  /  GET http://localhost:xx/issue
 export const getIssue = async (req, res) => {
   console.log(req.params)
   try {
-    // 尋找文章
+    // 尋找問題
     // find() 內可以指定搜尋條件 ex: member: false
     const result = await issue.find({ member: false })
     res.status(200).send({
@@ -72,4 +72,33 @@ export const getIssue = async (req, res) => {
     })
   }
   console.log('getIssue 取得問題 (訪客)')
+}
+
+// getIssueForManage 取得問題 (管理)  /  GET http://localhost:xx/issue/all
+export const getIssueForManage = async (req, res) => {
+  // 驗證權限是否為管理員
+  if (req.user.role !== 1) {
+    res.status(403).send({
+      success: false,
+      message: '沒有權限'
+    })
+    // 驗證沒過就不跑接下來的程式，也可以後面都用 else 包起來
+    return
+  }
+  try {
+    // 尋找問題
+    // find() 內可以指定搜尋條件 ex: member: false
+    const result = await issue.find()
+    res.status(200).send({
+      success: true,
+      message: '',
+      result
+    })
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: '伺服器錯誤'
+    })
+  }
+  console.log('getIssueForManage 取得問題 (管理)')
 }

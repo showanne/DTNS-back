@@ -1,9 +1,10 @@
 import express from 'express'
-// import auth from '../middleware/auth.js'
+import auth from '../middleware/auth.js'
 import {
   addIssue,
   // addIssueForMember,
-  getIssue
+  getIssue,
+  getIssueForManage
 } from '../controllers/issue.js'
 
 const router = express.Router()
@@ -17,5 +18,7 @@ router.post('/', addIssue)
 // router.post('/member', auth, addIssueForMember)
 // getIssue 取得問題 (訪客)
 router.get('/', getIssue)
+// getIssueForManage 取得問題 (管理)
+router.get('/all', auth, getIssueForManage)
 
 export default router

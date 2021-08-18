@@ -411,3 +411,25 @@ export const deleteArticleForMember = async (req, res) => {
   }
   console.log('deleteArticleForMember 刪除文章 (會員)')
 }
+
+// getAllCarousel 取得首頁輪播所需圖片   /  GET http://localhost:xx/article/carousel
+export const getAllCarousel = async (req, res) => {
+  try {
+    // 尋找所有文章
+    // find() 內可以指定搜尋條件 ex: share: true
+    const result = await article.find({
+      template: 0
+    })
+    res.status(200).send({
+      success: true,
+      message: '',
+      result
+    })
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: '伺服器錯誤'
+    })
+  }
+  console.log('getAllCarousel 取得首頁輪播所需圖片')
+}

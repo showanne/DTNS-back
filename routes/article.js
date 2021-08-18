@@ -7,6 +7,7 @@ import {
   getArticle,
   getArticleByTemp,
   getArticleByTempForMember,
+  getAllCarousel,
   getAllArticle,
   getArticleById,
   editArticleForManage,
@@ -27,8 +28,10 @@ router.post('/member', auth, upload, newArticleForMember)
 router.get('/', getArticle)
 // getArticleByTemp 取得指定分類的文章(訪客) 條件設定為有開放(share)的
 router.get('/template/:template', getArticleByTemp)
-// getArticleByTempForMember 取得指定分類的文章 (會員)
-router.get('/member/template/:template', auth, getArticleByTempForMember)
+// getArticleByTempForMember 取得指定分類的文章 (會員) /member/template/:template
+router.get('/member/template', auth, getArticleByTempForMember)
+// getAllCarousel 取得首頁輪播所需圖片
+router.get('/carousel', getAllCarousel)
 // getAllArticle 取得所有文章 (管理者)
 router.get('/all', auth, getAllArticle)
 // getArticleById 取得個別文章

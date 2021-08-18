@@ -38,9 +38,10 @@ app.use(cors({
       callback(null, true)
     } else {
       // 如果不是開發環境，再做判斷是從哪邊來的請求
-      if (origin !== undefined &&
-          origin.includes('github')) {
-      // 如果是 github 來的請求就允許
+      // 傳圖片 headers 的 origin 會是 undefined
+      if (origin === undefined ||
+        origin.includes('github')) {
+        // 判斷接受圖片(undefined) 或 github 的請求 允許
         callback(null, true)
       } else {
         // 拒絕請求

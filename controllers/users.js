@@ -260,7 +260,7 @@ export const signInLineData = async (req, res) => {
   }
   console.log('signInLineData Line登入換資料')
 }
-// getUsers 取得所有使用者  /  GET http://localhost:xx/users
+// getUsers 取得所有使用者資料  /  GET http://localhost:xx/users
 export const getUsers = async (req, res) => {
   // 驗證權限是否為管理員
   if (req.user.role !== 1) {
@@ -285,5 +285,65 @@ export const getUsers = async (req, res) => {
       message: '伺服器錯誤'
     })
   }
-  console.log('getUsers 取得所有使用者')
+  console.log('getUsers 取得所有使用者資料')
+}
+
+// extend 更新 token  /  POST http://localhost:xx/users/extend
+export const extend = async (req, res) => {
+  // 拿舊 token 換新 token
+  try {
+    // 先去找傳進來的 token 是符合使用者資料庫裡的第幾個
+    const idx = req.user.tokens.findIndex(token => req.token)
+    // 簽發驗證序號 有效期為7天
+    const token = jwt.sign(
+      // jwt 內容資料
+      { _id: req.user._id.toString() },
+      // 加密用的key
+      process.env.SECRET,
+      // jwt 設定有效期
+      { expiresIn: '7 days' }
+    )
+    console.log(token)
+    // 將新 token 替換原本的
+    req.user.tokens[idx] = token
+    // 標記陣列文字已修改過，不然不會更新
+    req.user.markModified('tokens')
+    // 儲存之前不驗證就存入
+    req.user.save({ validateBeforeSave: false })
+    // 把序號存入使用者資料
+    req.user.tokens.push({ jwt: token })
+    res.status(200).send({
+      success: true,
+      message: '登入成功',
+      result: token
+    })
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: '伺服器錯誤'
+    })
+  }
+  console.log('extend 更新 token')
+}
+
+// getUserInfo 抓取使用者資料
+export const getUserInfo = async (req, res) => {
+  try {
+    res.status(200).send({
+      success: true,
+      message: '',
+      result: {
+        account: req.user.account,
+        name: req.user.name,
+        role: req.user.role,
+        avatar: req.user.avatar
+      }
+    })
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: '伺服器錯誤'
+    })
+  }
+  console.log('getUserInfo 抓取使用者資料')
 }

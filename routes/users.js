@@ -6,8 +6,9 @@ import {
   signInLine,
   signInLineData,
   signOut,
-  getUsers
-  // extend
+  getUsers,
+  getUserInfo,
+  extend
 } from '../controllers/users.js'
 
 const router = express.Router()
@@ -23,9 +24,11 @@ router.get('/signInLineData', signInLineData)
 router.get('/signInLine', signInLine)
 // signOut 登出
 router.delete('/signOut', auth, signOut)
-// getUsers 取得所有使用者
-router.get('/', auth, getUsers)
-// extend
-// router.post('/extend', auth, extend)
+// getUsers 取得所有使用者資料
+router.get('/all', auth, getUsers)
+// getUserInfo 抓取使用者資料
+router.get('/', auth, getUserInfo)
+// extend 更新 token
+router.post('/extend', auth, extend)
 
 export default router

@@ -12,8 +12,8 @@ const bot = linebot({
 })
 
 // 監聽進來的請求
-bot.listen('/', process.env.PORT_BOT, () => {
-  console.log('Bot start ' + process.env.PORT_BOT)
+bot.listen('/', process.env.PORT, () => {
+  console.log('Bot start ' + process.env.PORT)
 })
 
 bot.on('message', event => {

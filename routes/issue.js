@@ -4,7 +4,8 @@ import {
   addIssue,
   // addIssueForMember,
   getIssue,
-  getIssueForManage
+  getIssueForManage,
+  editIssueForManage
 } from '../controllers/issue.js'
 
 const router = express.Router()
@@ -20,5 +21,7 @@ router.post('/', addIssue)
 router.get('/', getIssue)
 // getIssueForManage 取得問題 (管理)
 router.get('/all', auth, getIssueForManage)
+// editIssueForManage 回復問題 (管理)
+router.patch('/', auth, editIssueForManage)
 
 export default router

@@ -331,6 +331,40 @@ export const extend = async (req, res) => {
   console.log('extend 更新 token')
 }
 
+// line token 延期
+//  Qs 將回傳的 JSON 轉 form-urlencoded 格式， line 才可以接收資料
+// const options = Qs.stringify({
+//   grant_type: refresh_token,
+//   refresh_token: user.tokens.refresh_token,
+//   client_id: process.env.CHANNEL_ID,
+//   client_secret: process.env.CHANNEL_SECRET
+// })
+// 跟 line 請求 更新 token
+// const { data } = await axios.post('https://api.line.me/oauth2/v2.1/token', options, {
+//   headers: {
+//     'Content-Type': 'application/x-www-form-urlencoded'
+//   }
+// })
+//   "token_type": "Bearer"
+//   "scope": "openid profile" 使用者提供的權限
+//   "access_token": "" 有效期間為 30 天的 Access token。
+//   "expires_in": "" 過期之前的秒數。
+//   "refresh_token": "" 取得新的 Access token，所需要的 Token。
+
+// line 登出
+//  Qs 將回傳的 JSON 轉 form-urlencoded 格式， line 才可以接收資料
+// const options = Qs.stringify({
+//   client_id: process.env.CHANNEL_ID,
+//   client_secret: process.env.CHANNEL_SECRET
+//   access_token: user.tokens.access_token,
+// })
+// 跟 line 請求 更新 token
+// const { data } = await axios.post('https://api.line.me/oauth2/v2.1/revoke', options, {
+//   headers: {
+//     'Content-Type': 'application/x-www-form-urlencoded'
+//   }
+// })
+
 // getUserInfo 抓取使用者資料
 export const getUserInfo = async (req, res) => {
   try {

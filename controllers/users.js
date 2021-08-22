@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken' // 驗證套件
 import users from '../models/users.js'
 import axios from 'axios'
 import Qs from 'qs'
+import { inspect } from 'util' // 展開 [object Object] 套件
 
 // signUp 註冊  / POST http://localhost:xx/users
 export const signUp = async (req, res) => {
@@ -196,6 +197,7 @@ export const signInLine = async (req, res) => {
 
     result.avatar = decoded.picture
     result.name = decoded.name
+    result.account = decoded.name
 
     // 把序號存入使用者資料
     result.tokens.push({
@@ -208,6 +210,8 @@ export const signInLine = async (req, res) => {
     result.save({ validateBeforeSave: false })
     // 重新將請求導回前台
     res.redirect(process.env.FRONT_URL + '?jwt=' + myjwt)
+
+    console.log('signInLine result :' + inspect({ result }))
   } catch (error) {
     console.log(error)
     res.status(500).send({
@@ -230,12 +234,12 @@ export const signInLineData = async (req, res) => {
     if (token.length > 0) {
     // 解碼 jwt
       const decoded = jwt.verify(token, process.env.SECRET)
-      // console.log(decoded)
+      console.log(decoded)
       // 取出裡面紀錄的使用者 id
       const _id = decoded._id
       // 查詢是否有使用者資料有 jwt 紀錄的 _id
       req.user = await users.findOne({ _id })
-      // console.log(req.user.name)
+      console.log(req.user.name)
 
       res.status(200).send({
         success: true,
@@ -243,6 +247,7 @@ export const signInLineData = async (req, res) => {
         // result: req.user
         token: token,
         name: req.user.name,
+        account: req.user.name,
         avatar: req.user.avatar,
         role: req.user.role
       })

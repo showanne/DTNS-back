@@ -25,7 +25,7 @@ export const addIssue = async (req, res) => {
       date: req.body.date
     })
 
-    await issue.create(req.body)
+    // await issue.create(req.body)
     res.status(200).send({
       success: true,
       message: '',

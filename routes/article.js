@@ -12,6 +12,7 @@ import {
   getArticleById,
   editArticleForManage,
   editArticleForMember,
+  likeArticle,
   deleteArticleForMember
 } from '../controllers/article.js'
 
@@ -41,6 +42,8 @@ router.get('/:id', getArticleById)
 router.patch('/all', auth, editArticleForManage)
 // editArticle 編輯文章 (會員)
 router.patch('/member/:id', auth, upload, editArticleForMember)
+// likeArticle 按讚文章 (會員)
+router.patch('/like/:id', auth, likeArticle)
 // deleteArticle 刪除文章 (會員)
 router.delete('/member/:id', auth, deleteArticleForMember)
 

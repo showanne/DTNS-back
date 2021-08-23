@@ -66,7 +66,15 @@ const ArticleSchema = new Schema({
   },
   // 按讚人次
   likeNum: {
-    type: Array
+    type: [
+      {
+        likeName: {
+          type: Schema.Types.ObjectId,
+          ref: 'users'
+          // required: [true, '沒有文章']
+        }
+      }
+    ]
   },
   // 儲存人次
   saveNum: {

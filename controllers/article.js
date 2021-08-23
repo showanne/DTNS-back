@@ -316,10 +316,12 @@ export const editArticleForManage = async (req, res) => {
 
 // editArticleForMember 編輯文章 (會員)  /  PATCH http://localhost:xx/article/member/:id
 export const editArticleForMember = async (req, res) => {
+  console.log(req.params.id)
+  console.log(req.body)
   // NOTE: 訪客不需要編輯文章
   // 驗證權限是否為會員或管理員
   // 一般訪客 -1 / 一般會員 0 / 管理者 1
-  if (req.user.role !== 1 || req.user.role !== 0) {
+  if (req.user.role === -1) {
     res.status(403).send({
       success: false,
       message: '沒有權限'
@@ -351,7 +353,7 @@ export const editArticleForMember = async (req, res) => {
 
     // findByIdAndUpdate 尋找符合傳進來的 id 的那筆
     const result = await article.findByIdAndUpdate(
-      req.params.id,
+      req.body._id,
       editData,
       { new: true }
     )
@@ -432,4 +434,70 @@ export const getAllCarousel = async (req, res) => {
     })
   }
   console.log('getAllCarousel 取得首頁輪播所需圖片')
+}
+
+// likeArticle 按讚文章 (會員)  /  PATCH http://localhost:xx/article/like/:id
+export const likeArticle = async (req, res) => {
+  // 驗證權限是否為會員 0
+  if (req.user.role !== 0) {
+    res.status(403).send({
+      success: false,
+      message: '沒有權限'
+    })
+    // 驗證沒過就不跑接下來的程式，也可以後面都用 else 包起來
+    return
+  }
+
+  try {
+    // 尋找傳進來 id 的那位會員的資料，只取 editor 欄位
+    // .populate 可以將 ref 欄位的資料帶出來 -> ref: 'article'
+    // const { editor } = await users.findById(req.user._id, 'editor').populate('editor.article')
+    console.log(req.body)
+    // findByIdAndUpdate 尋找符合傳進來的 id 的那筆
+    await article.findOneAndUpdate(
+      // 找到 article 裡符合傳入的文章 ID
+      {
+        _id: req.body.article
+      },
+      {
+        $push: {
+          likeNum: req.body.name
+        },
+        $pull: {
+          likeNum: req.body.name
+        }
+      }
+    )
+    // req.user.editor.push({ article: result })
+    // findByIdAndUpdate 尋找符合傳進來的 id 的那筆
+    // const result = await article.findByIdAndUpdate(
+    //   req.params.id,
+    //   editData,
+    //   { new: true }
+    // )
+    // { new: true } 回傳新的結果
+    res.status(200).send({
+      success: true,
+      message: ''
+    })
+  } catch (error) {
+    if (error.name === 'validationError') {
+      // 如果錯誤訊息是驗證錯誤
+      // 錯誤的訊息的 key 值為欄位名稱，不固定
+      // 用 Object.keys 取第一個驗證錯誤
+      const key = Object.keys(error.errors)[0]
+      // 取得第一筆 驗證錯誤訊息
+      const message = error.errors[key].message
+      res.status(400).send({
+        success: true,
+        message: message
+      })
+    } else {
+      res.status(500).send({
+        success: true,
+        message: '伺服器錯誤'
+      })
+    }
+  }
+  console.log('likeArticle 按讚文章 (會員)')
 }

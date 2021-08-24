@@ -12,6 +12,7 @@ export const newArticle = async (req, res) => {
       success: false,
       message: '資料格式不正確'
     })
+    return
   }
   try {
     // TODO: 指定將文章創建進訪客身分區 user-1 (role: -1)
@@ -75,6 +76,7 @@ export const newArticleForMember = async (req, res) => {
       success: false,
       message: '資料格式不正確'
     })
+    return
   }
   try {
     // let author = ''
@@ -184,7 +186,7 @@ export const getArticleByTempForMember = async (req, res) => {
     // 驗證沒過就不跑接下來的程式，也可以後面都用 else 包起來
     return
   }
-  console.log(req.params)
+  // console.log(req.params)
   try {
     // 尋找傳進來 id 的那位會員的資料，只取 editor 欄位
     // .populate 可以將 ref 欄位的資料帶出來 -> ref: 'article'
@@ -336,6 +338,7 @@ export const editArticleForMember = async (req, res) => {
       success: false,
       message: '資料格式不正確'
     })
+    return
   }
   try {
     const editData = {

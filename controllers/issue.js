@@ -117,11 +117,12 @@ export const editIssueForManage = async (req, res) => {
   }
   // 檢查進來的資料格式
   // 前端送出的資料類型 FormData 後端接收 multipart/form-data
-  if (!req.headers['content-type'] || !req.headers['content-type'].includes('multipart/form-data')) {
+  if (!req.headers['content-type'] || !req.headers['content-type'].includes('application/json')) {
     res.status(400).send({
       success: false,
       message: '資料格式不正確'
     })
+    return
   }
   try {
     // findByIdAndUpdate 尋找符合傳進來的 id 的那筆

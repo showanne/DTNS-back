@@ -1,22 +1,17 @@
 # DTNS API
 
-### 文章相關
+### 文章相關(訪客)
 `POST`　/article
-
-`POST`　/article/member
-
 `GET`　/article
-
 `GET`　/article/template/:template
-
-`GET`　/article/member/template
-
-`GET`　/article/all
-
 `GET`　/article/id
 
-`PATCH`　/article/all
-
+### 文章相關(會員)
+`POST`　/article/member
+`GET`　/article/member/template
 `PATCH`　/article/member/id
-
 `DELETE`　/article/member/id
+
+### 文章相關(管理)
+`GET`　/article/all
+`PATCH`　/article/all
